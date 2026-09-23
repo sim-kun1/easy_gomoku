@@ -295,9 +295,8 @@ bool checkWin(int i, int j, int color)
 }
 
 
-
 int main(){
-    initgraph(WIN_W,WIN_H);
+    initgraph(WIN_W,WIN_H,INIT_RENDERMANUAL);
     setbkcolor(EGERGB(240,220,180));
     initButtons();
     updateButtons();
