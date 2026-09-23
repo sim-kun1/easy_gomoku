@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "MSVC 调试当前文件 (F5)",
+            "type": "cppvsdbg",
+            "request": "launch",
+            "program": "${fileDirname}\\${fileBasenameNoExtension}.exe",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${fileDirname}",
+            "environment": [],
+            "console": "integratedTerminal",
+            "preLaunchTask": "MSVC 编译当前文件",
+            "visualizerFile": "c:\\Users\\lenovo\\AppData\\Roaming\\Code\\User\\workspaceStorage\\5351363f1ff6abcba8c8d5e9b04eff3c\\tonka3000.qtvsctools\\qt.natvis.xml"
+        }
+    ]
+}

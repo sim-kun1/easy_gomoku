@@ -1,0 +1,22 @@
+{
+    // 隐藏编译副产物(.exe/.obj/.pdb 等), 只影响资源管理器显示, 不删除文件
+    // F5 / Ctrl+Shift+B 不受影响, 想删时在资源管理器关掉该条目即可
+    "files.exclude": {
+        "**/*.exe": true,
+        "**/*.obj": true,
+        "**/*.ilk": true,
+        "**/*.pdb": true,
+        "**/*.idb": true,
+        "**/*.ipdb": true,
+        "**/*.iobj": true
+    },
+    // 终端默认使用 UTF-8 代码页, 让中文 printf/cout 不乱码
+    "terminal.integrated.defaultProfile.windows": "cmd utf-8",
+    "terminal.integrated.profiles.windows": {
+        "cmd utf-8": {
+            "path": "cmd.exe",
+            "args": ["/K", "chcp 65001 >nul"]
+        }
+    },
+    "cmake.sourceDirectory": "D:/code/ccpp/qt"
+}
