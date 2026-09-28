@@ -1,6 +1,7 @@
 #include "gomoku.h"
 
 #include "board.cpp"
+#include "ai.cpp"
 #include "draw.cpp"
 #include "ui.cpp"
 
@@ -13,6 +14,7 @@ int main(){
     while(true)
     {
         handleMouse();
+        updateAI();
         updateReplay();
         mainDraw();
         delay_ms(10);

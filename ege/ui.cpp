@@ -1,18 +1,27 @@
 // 按钮与鼠标交互
 #include "gomoku.h"
 
+int curScreen(){
+    if(game.isReplaying) return 3;
+    if(game.state == 1) return 1;
+    if(game.state == 2) return 2;
+    return 0;
+}
+
 void updateButtons(){
+    int screen = curScreen();
     for(auto &btn : game.btnList)
     {
-        if(game.isReplaying) btn.Hide(btn.text != "StopReplay");
-        else if(btn.text == "StopReplay") btn.Hide(1);
-        else if(btn.onlyInGame) btn.Hide(game.state != 1);
-        else if(btn.text == "Restart") btn.Hide(game.state != 2);
-        else btn.Hide(game.state != 0);
+        bool show = (btn.screen == screen);
+        if(btn.onlyInAi && !ai.choosing) show = false;
+        else if(!btn.onlyInAi && ai.choosing) show = false;
+        btn.Hide(!show);
     }
 }
 
 void startGame(){
+    ai.enabled = false;
+    ai.choosing = false;
     resetState();
     game.gameRecord.clear();
     game.state = 1;
@@ -82,10 +91,6 @@ void netGame(){
     xyprintf(8, 8, "netcheck");
 }
 
-void aiGame(){
-    xyprintf(8, 8, "aicheck");
-}
-
 void surrender(){
     if(game.blackTurn == 1) game.winner = STONE_WHITE;
     else game.winner = STONE_BLACK;
@@ -108,12 +113,12 @@ void initButtons(){
 
     Button btnSurrender(275,WIN_H-50,120,40,"Surrender");
     btnSurrender.onClick = surrender;
-    btnSurrender.onlyInGame = true;
+    btnSurrender.screen = 1;
     game.btnList.push_back(btnSurrender);
 
     Button btnRestart(265,500,150,50,"Restart");
     btnRestart.onClick = restartGame;
-    btnRestart.Hide(1);
+    btnRestart.screen = 2;
     game.btnList.push_back(btnRestart);
     
     Button btnRecord(265,625,150,50,"PlayRecord");
@@ -122,12 +127,28 @@ void initButtons(){
 
     Button btnStop(275,WIN_H-50,120,40,"StopReplay");
     btnStop.onClick = stopReplay;
+    btnStop.screen = 3;
     game.btnList.push_back(btnStop);
+
+    Button btnAiBlack(265,400,150,50,"AI-Black");
+    btnAiBlack.onClick = aiChooseBlack;
+    btnAiBlack.onlyInAi = true;
+    game.btnList.push_back(btnAiBlack);
+
+    Button btnAiWhite(265,475,150,50,"AI-White");
+    btnAiWhite.onClick = aiChooseWhite;
+    btnAiWhite.onlyInAi = true;
+    game.btnList.push_back(btnAiWhite);
+
+    Button btnAIBack(265,550,150,50,"Back");
+    btnAIBack.onlyInAi = true;
+    btnAIBack.onClick = aiGame;
+    game.btnList.push_back(btnAIBack);
 }
 
 void updatePreview(int mx, int my)
 {
-    if(game.state != 1 || game.isReplaying)
+    if(game.state != 1 || game.isReplaying || isAiTurn())
     {
         game.previewI = -1;
         game.previewJ = -1;
@@ -170,25 +191,11 @@ void handleMouse(){
                 if(btn.isHit(m.x, m.y) && btn.onClick != nullptr)
                 {
                     btn.onClick();
-                    break;//一次点击只触发一个按钮
+                    break;
                 }
             }
-            if(game.state == 1 && game.previewI != -1){
-                int curColor;
-                if(game.blackTurn){
-                    game.board[game.previewI][game.previewJ] = STONE_BLACK;
-                    curColor = STONE_BLACK;
-                }else{
-                    game.board[game.previewI][game.previewJ] = STONE_WHITE;
-                    curColor = STONE_WHITE;
-                }
-                game.gameRecord.push_back({game.previewI,game.previewJ,curColor});
-                if(checkWin(game.previewI,game.previewJ,curColor)){
-                    game.winner = curColor;
-                    game.state = 2;
-                    updateButtons();
-                }
-                else game.blackTurn = !game.blackTurn;
+            if(game.state == 1 && game.previewI != -1 && !isAiTurn()){
+                placeStone(game.previewI, game.previewJ);
             }
         }
     }

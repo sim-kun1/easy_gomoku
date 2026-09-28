@@ -8,6 +8,25 @@ void resetState(){
     game.winner = -1;
 }
 
+void placeStone(int i, int j)
+{
+    int curColor;
+    if(game.blackTurn){
+        game.board[i][j] = STONE_BLACK;
+        curColor = STONE_BLACK;
+    }else{
+        game.board[i][j] = STONE_WHITE;
+        curColor = STONE_WHITE;
+    }
+    game.gameRecord.push_back({i,j,curColor});
+    if(checkWin(i,j,curColor)){
+        game.winner = curColor;
+        game.state = 2;
+        updateButtons();
+    }
+    else game.blackTurn = !game.blackTurn;
+}
+
 bool checkWin(int i, int j, int color)
 {
     int dir[4][2] = {{1,0}, {0,1}, {1,1}, {1,-1}};

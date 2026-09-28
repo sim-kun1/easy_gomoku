@@ -16,6 +16,7 @@ const int STONE_EMPTY = 0;
 const int STONE_BLACK = 1;
 const int STONE_WHITE = 2;
 const int REPLAY_FRAMES = 80;//停留帧数
+const int AI_THINK_FRAMES = 40;//AI思考帧数
 
 struct Step{
     int i;
@@ -39,10 +40,19 @@ struct Game{
 
 
 
+struct Ai{
+    bool enabled = false;
+    bool choosing = false;
+    int color = STONE_BLACK;
+    int thinkTick = 0;
+};
+
 extern Game game;
+extern Ai ai;
 
 // board.cpp
 void resetState();
+void placeStone(int i, int j);
 bool checkWin(int i, int j, int color);
 
 // draw.cpp
@@ -62,7 +72,15 @@ void handleMouse();
 void startGame();
 void restartGame();
 void netGame();
-void aiGame();
 void surrender();
 void updateReplay();
 void stopReplay();
+
+// ai.cpp
+void aiGame();
+void aiChooseBlack();
+void aiChooseWhite();
+int turnColor();
+bool isAiTurn();
+void updateAI();
+void aiDecide(int &i, int &j);
