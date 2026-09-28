@@ -1,3 +1,5 @@
+#pragma once
+
 #include <graphics.h>
 #include <iostream>
 #include <vector>
@@ -13,6 +15,13 @@ const int WIN_H = WIN_W;
 const int STONE_EMPTY = 0;
 const int STONE_BLACK = 1;
 const int STONE_WHITE = 2;
+const int REPLAY_FRAMES = 80;//停留帧数
+
+struct Step{
+    int i;
+    int j;
+    int color;
+};
 
 struct Game{
     int board[BOARD_SIZE][BOARD_SIZE] = {0};
@@ -21,8 +30,14 @@ struct Game{
     int state = 0;//0:菜单 1:game 2:over
     int previewI = -1;
     int previewJ = -1;
+    bool isReplaying = false;
+    int replayIndex = 0;
+    int replayTick = 0;
     vector<Button> btnList;
+    vector<Step> gameRecord;
 };
+
+
 
 extern Game game;
 
@@ -49,3 +64,5 @@ void restartGame();
 void netGame();
 void aiGame();
 void surrender();
+void updateReplay();
+void stopReplay();

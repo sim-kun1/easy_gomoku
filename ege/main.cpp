@@ -1,6 +1,5 @@
 #include "gomoku.h"
 
-// 按功能拆分的实现文件（与 button.cpp 一样直接包含）
 #include "board.cpp"
 #include "draw.cpp"
 #include "ui.cpp"
@@ -14,6 +13,7 @@ int main(){
     while(true)
     {
         handleMouse();
+        updateReplay();
         mainDraw();
         delay_ms(10);
     }

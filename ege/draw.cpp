@@ -82,6 +82,11 @@ void mainDraw(){
         drawAllChess();
         drawPreviewHint();
         drawTurn();
+        if(game.isReplaying){
+            setfont(24,0,"微软雅黑");
+            setcolor(EGERGB(200,0,0));
+            outtextxy(WIN_H-120,10,"RECORDING");
+        }
     }else if(game.state == 2){
         drawBoard();
         drawAllChess();

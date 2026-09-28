@@ -1,9 +1,12 @@
 // 按钮与鼠标交互
+#include "gomoku.h"
 
 void updateButtons(){
     for(auto &btn : game.btnList)
     {
-        if(btn.onlyInGame) btn.Hide(game.state != 1);
+        if(game.isReplaying) btn.Hide(btn.text != "StopReplay");
+        else if(btn.text == "StopReplay") btn.Hide(1);
+        else if(btn.onlyInGame) btn.Hide(game.state != 1);
         else if(btn.text == "Restart") btn.Hide(game.state != 2);
         else btn.Hide(game.state != 0);
     }
@@ -11,12 +14,66 @@ void updateButtons(){
 
 void startGame(){
     resetState();
+    game.gameRecord.clear();
     game.state = 1;
     updateButtons();
 }
 
 void restartGame(){
     resetState();
+    game.state = 0;
+    updateButtons();
+}
+
+void playRecord(){
+    if(game.gameRecord.empty()) {
+        setfont(36,0,"微软雅黑");
+        setcolor(EGERGB(239,52,115));
+        string msg = "NOT FIND RECORD";
+        const char* str = msg.c_str();
+        int tw = textwidth(str);
+        outtextxy((WIN_W - tw)/2, 300, str);
+        delay_ms(1000);
+        while(mousemsg()) getmouse();
+        return;
+    }
+    game.isReplaying = true;
+    game.replayIndex = 0;
+    game.replayTick = 0;
+    memset(game.board, 0, sizeof(game.board));
+    game.previewI = -1;
+    game.previewJ = -1;
+    game.state = 1;
+    game.blackTurn = true;
+    updateButtons();
+}
+
+void updateReplay(){
+    if(!game.isReplaying) return;
+
+    game.replayTick++;
+    if(game.replayTick < REPLAY_FRAMES) return;
+    game.replayTick = 0;
+
+    if(game.replayIndex >= static_cast<int>(game.gameRecord.size())){
+        game.isReplaying = false;
+        game.state = 2;
+        if(game.gameRecord.back().color == STONE_BLACK)
+            game.winner = STONE_BLACK;
+        else
+            game.winner = STONE_WHITE;
+        updateButtons();
+        return;
+    }
+
+    auto &step = game.gameRecord[game.replayIndex];
+    game.board[step.i][step.j] = step.color;
+    game.blackTurn = !game.blackTurn;
+    game.replayIndex++;
+}
+
+void stopReplay(){
+    game.isReplaying = false;
     game.state = 0;
     updateButtons();
 }
@@ -58,11 +115,19 @@ void initButtons(){
     btnRestart.onClick = restartGame;
     btnRestart.Hide(1);
     game.btnList.push_back(btnRestart);
+    
+    Button btnRecord(265,625,150,50,"PlayRecord");
+    btnRecord.onClick = playRecord;
+    game.btnList.push_back(btnRecord);
+
+    Button btnStop(275,WIN_H-50,120,40,"StopReplay");
+    btnStop.onClick = stopReplay;
+    game.btnList.push_back(btnStop);
 }
 
 void updatePreview(int mx, int my)
 {
-    if(game.state != 1)
+    if(game.state != 1 || game.isReplaying)
     {
         game.previewI = -1;
         game.previewJ = -1;
@@ -105,6 +170,7 @@ void handleMouse(){
                 if(btn.isHit(m.x, m.y) && btn.onClick != nullptr)
                 {
                     btn.onClick();
+                    break;//一次点击只触发一个按钮
                 }
             }
             if(game.state == 1 && game.previewI != -1){
@@ -116,6 +182,7 @@ void handleMouse(){
                     game.board[game.previewI][game.previewJ] = STONE_WHITE;
                     curColor = STONE_WHITE;
                 }
+                game.gameRecord.push_back({game.previewI,game.previewJ,curColor});
                 if(checkWin(game.previewI,game.previewJ,curColor)){
                     game.winner = curColor;
                     game.state = 2;
