@@ -99,5 +99,6 @@ void mainDraw(){
         int tw = textwidth(str);
         outtextxy((WIN_W - tw)/2, 30, str);
     }
+    drawNetInfo();
     drawButtons();
 }

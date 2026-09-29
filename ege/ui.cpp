@@ -13,8 +13,10 @@ void updateButtons(){
     for(auto &btn : game.btnList)
     {
         bool show = (btn.screen == screen);
-        if(btn.onlyInAi && !ai.choosing) show = false;
-        else if(!btn.onlyInAi && ai.choosing) show = false;
+        if(ai.choosing) show = show && btn.onlyInAi;
+        else if(net.choosing) show = show && btn.onlyInNet;
+        else if(btn.onlyInAi) show = false;
+        else if(btn.onlyInNet && net.state == NET_IDLE) show = false;
         btn.Hide(!show);
     }
 }
@@ -29,6 +31,11 @@ void startGame(){
 }
 
 void restartGame(){
+    if(net.state == NET_PLAY){
+        netSendRestart();
+        startGame();
+        return;
+    }
     resetState();
     game.state = 0;
     updateButtons();
@@ -87,14 +94,15 @@ void stopReplay(){
     updateButtons();
 }
 
-void netGame(){
-    xyprintf(8, 8, "netcheck");
-}
-
 void surrender(){
-    if(game.blackTurn == 1) game.winner = STONE_WHITE;
+    if(net.state == NET_PLAY){
+        if(net.myColor == STONE_BLACK) game.winner = STONE_WHITE;
+        else game.winner = STONE_BLACK;
+    }
+    else if(game.blackTurn == 1) game.winner = STONE_WHITE;
     else game.winner = STONE_BLACK;
     game.state = 2;
+    netSendSurrender();
     updateButtons();
 }
 
@@ -144,11 +152,32 @@ void initButtons(){
     btnAIBack.onlyInAi = true;
     btnAIBack.onClick = aiGame;
     game.btnList.push_back(btnAIBack);
+
+    Button btnHost(265,400,150,50,"HostGame");
+    btnHost.onlyInNet = true;
+    btnHost.onClick = netHost;
+    game.btnList.push_back(btnHost);
+
+    Button btnJoin(265,475,150,50,"JoinGame");
+    btnJoin.onlyInNet = true;
+    btnJoin.onClick = netJoin;
+    game.btnList.push_back(btnJoin);
+
+    Button btnNetBack(265,550,150,50,"Back");
+    btnNetBack.onlyInNet = true;
+    btnNetBack.onClick = netGame;
+    game.btnList.push_back(btnNetBack);
+
+    Button btnLeave(275,WIN_H-50,120,40,"LeaveNet");
+    btnLeave.onlyInNet = true;
+    btnLeave.screen = 2;
+    btnLeave.onClick = netLeave;
+    game.btnList.push_back(btnLeave);
 }
 
 void updatePreview(int mx, int my)
 {
-    if(game.state != 1 || game.isReplaying || isAiTurn())
+    if(game.state != 1 || game.isReplaying || isAiTurn() || netWaiting())
     {
         game.previewI = -1;
         game.previewJ = -1;
@@ -194,8 +223,9 @@ void handleMouse(){
                     break;
                 }
             }
-            if(game.state == 1 && game.previewI != -1 && !isAiTurn()){
+            if(game.state == 1 && game.previewI != -1 && !isAiTurn() && !netWaiting()){
                 placeStone(game.previewI, game.previewJ);
+                netSendMove(game.previewI, game.previewJ);
             }
         }
     }

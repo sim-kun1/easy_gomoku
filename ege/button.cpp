@@ -14,6 +14,7 @@ public:
     bool isHide = false;
     int screen = 0;//0菜单 1对局 2结束 3回放
     bool onlyInAi = false;
+    bool onlyInNet = false;
 
     Button(int x,int y,int w,int h,string text):x(x),y(y),w(w),h(h),text(text){}
 

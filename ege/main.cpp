@@ -2,6 +2,7 @@
 
 #include "board.cpp"
 #include "ai.cpp"
+#include "network.cpp"
 #include "draw.cpp"
 #include "ui.cpp"
 
@@ -15,6 +16,7 @@ int main(){
     {
         handleMouse();
         updateAI();
+        updateNet();
         updateReplay();
         mainDraw();
         delay_ms(10);
