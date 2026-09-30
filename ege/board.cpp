@@ -24,13 +24,34 @@ void placeStone(int i, int j)
         game.state = 2;
         updateButtons();
     }
+    if(checkFull()){
+        game.winner = 3;
+        game.state = 2;
+        updateButtons();
+    }
     else game.blackTurn = !game.blackTurn;
 }
+
+bool checkFull()
+{
+    for (const auto& row : game.board)
+    {
+        for (int val : row)
+        {
+            if (val == 0)
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
 
 bool checkWin(int i, int j, int color)
 {
     int dir[4][2] = {{1,0}, {0,1}, {1,1}, {1,-1}};
-
+    
     for(int d = 0; d < 4; d++)
     {
         int dx = dir[d][0];

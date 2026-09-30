@@ -18,7 +18,7 @@ const int STONE_EMPTY = 0;
 const int STONE_BLACK = 1;
 const int STONE_WHITE = 2;
 const int REPLAY_FRAMES = 80;//停留帧数
-const int AI_THINK_FRAMES = 40;//AI思考帧数
+const int AI_THINK_FRAMES = 40;
 const int NET_PORT = 8888;
 const int NET_TIMEOUT_FRAMES = 500;
 const int NET_IDLE = 0;
@@ -77,6 +77,7 @@ extern Net net;
 void resetState();
 void placeStone(int i, int j);
 bool checkWin(int i, int j, int color);
+bool checkFull();
 
 // draw.cpp
 void drawBoard();

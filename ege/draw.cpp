@@ -95,6 +95,7 @@ void mainDraw(){
         string msg;
         if(game.winner == STONE_BLACK) msg = "Black WIN!";
         else if(game.winner == STONE_WHITE) msg = "White WIN!";
+        else if(game.winner == 3) msg = "stalemate";
         const char* str = msg.c_str();
         int tw = textwidth(str);
         outtextxy((WIN_W - tw)/2, 30, str);
