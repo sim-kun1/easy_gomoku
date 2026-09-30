@@ -147,7 +147,7 @@ void aiDecide(int &i, int &j)
 
     for(auto &c : cand)
     {
-        if(makesFive(c.i, c.j, opp) || makesOpenFour(c.i, c.j, opp))
+        if(makesFive(c.i, c.j, my))
         {
             i = c.i;
             j = c.j;
@@ -157,13 +157,24 @@ void aiDecide(int &i, int &j)
 
     for(auto &c : cand)
     {
-        if(makesFive(c.i, c.j, my))
+        if(makesFive(c.i, c.j, opp))
         {
             i = c.i;
             j = c.j;
             return;
         }
     }
+
+    for(auto &c : cand)
+    {
+        if(makesOpenFour(c.i, c.j, opp))
+        {
+            i = c.i;
+            j = c.j;
+            return;
+        }
+    }
+
     for(auto &c : cand)
     {
         if(makesOpenFour(c.i, c.j, my))
