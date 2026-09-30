@@ -1,9 +1,7 @@
 #pragma once
 
-//gethostbyname/inet_addr 这些是老 API，新的 getaddrinfo/inet_pton 写起来啰嗦不少，
-//这里就用老 API，顺手把弃用警告关掉（必须写在 winsock2.h 之前）
 #define _WINSOCK_DEPRECATED_NO_WARNINGS
-#include <winsock2.h>//必须放在 graphics.h 前面：windows.h 里有旧的 winsock.h，顺序反了会重定义
+#include <winsock2.h>
 #include <graphics.h>
 #include <iostream>
 #include <vector>

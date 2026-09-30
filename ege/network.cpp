@@ -1,20 +1,4 @@
-// ============================================================
-// 联机对战（局域网 TCP）
-//
-// 总体思路：
-//   1. 房主(Host)：socket -> bind(端口) -> listen -> accept，等对方连进来
-//      加入者(Join)：socket -> connect(房主IP, 端口)
-//      连上之后两边就平等了，互相 send/recv。
-//   2. 所有 socket 都用 FIONBIO 设成"非阻塞"：accept/recv/connect 没数据时
-//      立刻返回，不会把游戏主循环卡住。每帧 updateNet() 推进一点，
-//      和回放、AI 的帧驱动是同一个套路。
-//   3. TCP 是"字节流"，它只保证字节顺序，不保证你 send 一次、对方 recv 就收到一条。
-//      所以自己定协议：固定长度的 NetMsg 结构体。收到半条先攒在 net.buf 里，
-//      攒够 sizeof(NetMsg) 才当成一条完整消息处理。
-//   4. 规则约定：房主执黑先行。谁本地落子就把坐标发给对方，
-//      对方收到 MOVE 就调 placeStone 替他落子 —— 用的是同一套胜负判断，
-//      所以两边的棋盘天然保持一致，不需要同步整张棋盘。
-// ============================================================
+
 #include "gomoku.h"
 
 #pragma comment(lib, "ws2_32.lib")
@@ -26,8 +10,6 @@ const int NET_MSG_MOVE = 1;
 const int NET_MSG_SURRENDER = 2;
 const int NET_MSG_RESTART = 3;
 
-// 三个 int，一共 12 字节。两边跑的是同一个程序、同一个结构体，
-// 直接把这 12 字节原样发过去就行（自己跟自己通信，不用考虑字节序和兼容）
 struct NetMsg{
     int type;
     int i;
@@ -292,7 +274,7 @@ void updateNet(){
         return;
     }
 
-    if(net.state == NET_PLAY) netRecv();//对局中只管收对方的包
+    if(net.state == NET_PLAY) netRecv();
 }
 
 

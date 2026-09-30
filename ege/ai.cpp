@@ -1,4 +1,4 @@
-// AI 模式：选边、回合驱动；决策算法在下面的 aiDecide
+// AI 模式
 #include "gomoku.h"
 
 Ai ai;
